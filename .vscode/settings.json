@@ -1,0 +1,9 @@
+{
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--experimental-string-processing"
+    ],
+    "python.linting.flake8Args": [
+        "--max-line-length=88"
+    ]
+}
