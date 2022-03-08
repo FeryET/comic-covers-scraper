@@ -1,6 +1,9 @@
 *~
+venv/
+
 
 secrets.env
+proxies.txt
 
 data/*
 !data/.gitkeep
