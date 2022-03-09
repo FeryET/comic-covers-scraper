@@ -43,13 +43,9 @@ def get_comic_series_data(series_url, series_name, proxy_manager) -> None:
     idx = 1
     fake = Faker()
     reached_final_page = False
-    miss = 0
     series_info = []
-    miss = 0
-    while not reached_final_page:
-        if miss > 10:
-            print(f"cannot reach any of {series_url} subpages.")
-            break
+    seen_error = False
+    while (not reached_final_page) or seen_error:
         if idx != 1:
             url = series_url + f"/{idx}"
         else:
@@ -68,7 +64,8 @@ def get_comic_series_data(series_url, series_name, proxy_manager) -> None:
                 reached_final_page = True
             series_info.extend(page_content)
         else:
-            miss += 1
+            print(f"cannot reach any of {series_url} subpages.")
+            seen_error = True
         idx += 1
     return series_info
 
