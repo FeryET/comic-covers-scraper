@@ -22,5 +22,13 @@ logging.info("Getting comics complete metadata.")
 get_all_comics_data("data", "comic-dataset-metadata", "data/comic-titles.csv")
 
 
-data = pd.read_csv("data/comic-dataset-metadata.csv").to_dict("records")
+data = (
+    pd.read_csv("data/comic-dataset-metadata.csv")
+    # reset the index and extract it as a column
+    .reset_index()
+    # rename the index to id
+    .rename({"index": "id"}, axis=1)
+    # change it to dict
+    .to_dict("records")
+)
 scraperwiki.sqlite.save(unique_keys=["id"], data=data)

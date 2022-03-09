@@ -35,7 +35,7 @@ def get_all_comics_data(
                 output_path,
                 mode="a",
                 header=not os.path.exists(output_path),
-                index_label="id",
+                index_label=False,
             )
             cache.clear()
 
@@ -58,7 +58,7 @@ def get_comic_series_data(series_url, series_name, proxy_manager) -> None:
             proxies={"http": proxy_manager.get_proxy()},
             headers={"User-Agent": fake.user_agent()},
             timeout=5,
-            allow_redirects=False,
+            allow_redirects=True,
         )
         if r.status_code == 200:
             page_content = parse_page(r.content, series_name)
