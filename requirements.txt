@@ -1,7 +1,9 @@
 pandas
 bs4
-fake-useragent
+Faker
 requests
 tqdm
 pillow
 python-dotenv
+scraperwiki
+dask[dataframes]
