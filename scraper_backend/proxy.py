@@ -7,20 +7,24 @@ import random
 PROXY_LOCATION = "proxies.txt"
 
 
-def prepare_proxies():
-    with requests.get(os.environ["MORPH_PROXY_URL"]) as r:
-        with open(PROXY_LOCATION, "w") as file:
-            for url in r.content.splitlines():
-                file.write(f"http://{url.decode().strip()}\n")
+class ProxyListManager:
+    def __init__(self):
+        self.prepare()
 
+    def prepare(self):
+        self.n = 0
+        with requests.get(os.environ["MORPH_PROXY_URL"]) as r:
+            self.proxies = [
+                f"http://{url.decode().strip()}\n" for url in r.content.splitlines()
+            ]
+        random.shuffle(self.proxies)
 
-def shuffle_proxies() -> List[str]:
-    with open(PROXY_LOCATION) as proxyfile:
-        proxies = [url.strip() for url in proxyfile]
-        random.shuffle(proxies)
-        return proxies
+    def __len__(self):
+        return len(self.proxies)
 
-
-def get_proxies():
-    prepare_proxies()
-    return shuffle_proxies()
+    def get_proxy(self):
+        if self.n >= len(self):
+            self.prepare()
+        item = self.proxies[self.n]
+        self.n += 1
+        return item

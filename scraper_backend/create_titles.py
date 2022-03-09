@@ -12,16 +12,20 @@ from sqlalchemy import desc
 import scraper_backend.proxy
 from tqdm.auto import tqdm
 
+from scraper_backend.utils import progress
+
 
 def create_titles_csv_file(download_folder: str, filename: str) -> None:
     alphabet = ["0-9"] + list(string.ascii_lowercase)
     base_url = "https://www.coverbrowser.com/a-z"
     fake = Faker()
     titles_info = []
-    for char in tqdm(alphabet, desc="creating title pages"):
-        time.sleep(random.uniform(1, 3))
+    proxy_manager = scraper_backend.proxy.ProxyListManager()
+    for char in progress(alphabet):
+        time.sleep(random.uniform(0.05, 1))
         r = requests.get(
             f"{base_url}/{char}/",
+            proxies={"http": proxy_manager.get_proxy()},
             headers={"User-Agent": fake.user_agent()},
         )
         if r.status_code == 200:
