@@ -22,7 +22,7 @@ def create_titles_csv_file(download_folder: str, filename: str) -> None:
     titles_info = []
     proxy_manager = scraper_backend.proxy.ProxyListManager()
     for char in progress(alphabet):
-        time.sleep(random.uniform(0.05, 1))
+        time.sleep(random.uniform(0.05, 0.5))
         r = requests.get(
             f"{base_url}/{char}/",
             proxies={"http": proxy_manager.get_proxy()},

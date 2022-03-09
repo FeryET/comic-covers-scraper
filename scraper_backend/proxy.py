@@ -1,8 +1,11 @@
 from distutils.command.config import config
+import time
 from typing import List
 import requests
 import os
 import random
+import logging
+
 
 PROXY_LOCATION = "proxies.txt"
 
@@ -25,6 +28,8 @@ class ProxyListManager:
     def get_proxy(self):
         if self.n >= len(self):
             self.prepare()
+            logging.info("Previous proxies expired. Preparing new proxies...")
+            time.sleep(30)
         item = self.proxies[self.n]
         self.n += 1
         return item

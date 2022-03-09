@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from bs4 import BeautifulSoup
@@ -24,7 +25,7 @@ def get_all_comics_data(
     if os.path.exists(output_path):
         os.remove(output_path)
     proxy_manager = scraper_backend.proxy.ProxyListManager()
-    for row_idx in progress(list(range(len(titles_info_df)))):
+    for row_idx in progress(list(range(len(titles_info_df))), 0.002):
         row = titles_info_df.iloc[row_idx]
         url = f"{base_url}{row['page_link']}"
         series_info = get_comic_series_data(url, row["title"], proxy_manager)
@@ -45,12 +46,13 @@ def get_comic_series_data(series_url, series_name, proxy_manager) -> None:
     reached_final_page = False
     series_info = []
     seen_error = False
-    while (not reached_final_page) or seen_error:
+    MAX_SUBPAGE_LIMIT = 100
+    while not reached_final_page:
         if idx != 1:
             url = series_url + f"/{idx}"
         else:
             url = series_url + "/"
-        time.sleep(random.uniform(0.05, 1))
+        time.sleep(random.uniform(0.05, 0.5))
         r = requests.get(
             url,
             proxies={"http": proxy_manager.get_proxy()},
@@ -64,8 +66,12 @@ def get_comic_series_data(series_url, series_name, proxy_manager) -> None:
                 reached_final_page = True
             series_info.extend(page_content)
         else:
-            print(f"cannot reach any of {series_url} subpages.")
             seen_error = True
+        if idx > MAX_SUBPAGE_LIMIT:
+            seen_error = True
+        if seen_error:
+            logging.info(f"Cannot extract info from {url}.")
+            break
         idx += 1
     return series_info
 

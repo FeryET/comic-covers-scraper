@@ -6,17 +6,19 @@ import scraperwiki
 import os
 import logging
 
-# logging.basicConfig(
-#     level=logging.DEBUG,
-#     format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s",
-#     # datefmt='%m-%d %H:%M',
-# )
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s",
+    # datefmt='%m-%d %H:%M',
+)
 
 if os.path.exists("secrets.env"):
     dotenv.load_dotenv("secrets.env")
-    print("Loaded environment variables.")
+    logging.info("Loaded environment variables.")
 
+logging.info("Generating title pages metadata.")
 create_titles_csv_file("data", "comic-titles")
+logging.info("Getting comics complete metadata.")
 get_all_comics_data("data", "comic-dataset-metadata", "data/comic-titles.csv")
 
 
