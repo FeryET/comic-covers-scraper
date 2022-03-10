@@ -47,7 +47,7 @@ def download_image(row, dataset_location, proxy_manager, faker, image_size):
     ) as r:
         if r.status_code == 200:
             image = Image.open(r.raw)
-            image.thumbnail((image_size, image_size))
+            image.thumbnail((image_size, image_size), resample=Image.NEAREST)
             image.save(fpath)
         else:
             logging.info(f"Cannot download {url}. status code: {r.status_code}")
