@@ -35,7 +35,7 @@ def get_all_comics_data(
                 output_path,
                 mode="a",
                 header=not os.path.exists(output_path),
-                index_label=False,
+                index_label="id",
             )
             cache.clear()
 

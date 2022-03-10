@@ -15,7 +15,7 @@ def create_image_dataset(
     metadata_csv, dataset_location, image_size=250, seed=42, population=0.1
 ):
     sampled_df = (
-        pd.read_csv(metadata_csv)
+        pd.read_csv(metadata_csv, index_col=0)
         .sample(frac=population, random_state=seed)
         .reset_index(drop=True)
     )
