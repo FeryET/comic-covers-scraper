@@ -14,14 +14,14 @@ import argparse
 def create_image_dataset(
     metadata_csv, dataset_location, image_size=250, seed=42, population=0.05
 ):
-    df = pd.read_csv(metadata_csv)
+    df = (
+        pd.read_csv(metadata_csv)
+        .sample(frac=population, random_state=seed)
+        .reset_index(drop=True)
+    )
     faker = Faker()
     dataset_location = Path(dataset_location)
-    indices = df.index.tolist()
-    random.seed(seed)
-    random.shuffle(indices)
-    indices = indices[: int(len(indices) * population)]
-    for row_idx in progress(indices, interval=0.001):
+    for row_idx in progress(df.index, interval=0.001):
         try:
             row = df.iloc[row_idx]
             download_image(row, dataset_location, faker, image_size)

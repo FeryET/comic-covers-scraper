@@ -25,7 +25,7 @@ class ProxyListManager:
                 for p in r.json()
             ]
         random.shuffle(self.proxies)
-        self.__logger.info("\n".join(self.proxies))
+        self.__logger.debug("\n".join(self.proxies))
 
     def __len__(self):
         return len(self.proxies)
