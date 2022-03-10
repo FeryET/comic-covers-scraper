@@ -37,10 +37,9 @@ def download_image(row, dataset_location, proxy_manager, faker, image_size):
     fpath.parent.mkdir(exist_ok=True, parents=True)
     base_url = "https://coverbrowser.com"
     url = f"{base_url}{row['img_url']}"
-    logging.info(url)
     with requests.get(
         url,
-        proxies={"http": proxy_manager.get_proxy()},
+        # proxies={"http": proxy_manager.get_proxy()},
         headers={"User-Agent": faker.user_agent()},
         stream=True,
         allow_redirects=True,
