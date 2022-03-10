@@ -12,18 +12,22 @@ import argparse
 
 
 def create_image_dataset(
-    metadata_csv, dataset_location, image_size=250, seed=42, population=0.05
+    metadata_csv, dataset_location, image_size=250, seed=42, population=0.1
 ):
-    df = (
+    sampled_df = (
         pd.read_csv(metadata_csv)
         .sample(frac=population, random_state=seed)
         .reset_index(drop=True)
     )
     faker = Faker()
     dataset_location = Path(dataset_location)
-    for row_idx in progress(df.index, interval=0.001):
+    sampled_df.to_csv(
+        dataset_location / f"sampled_dataset_seed_{seed}_population_{population}.csv",
+        index_label=False,
+    )
+    for row_idx in progress(sampled_df.index, interval=0.001):
         try:
-            row = df.iloc[row_idx]
+            row = sampled_df.iloc[row_idx]
             download_image(row, dataset_location, faker, image_size)
         except requests.exceptions.RequestException as e:
             logging.info(
