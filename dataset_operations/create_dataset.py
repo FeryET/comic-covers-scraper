@@ -1,3 +1,4 @@
+from functools import partial
 import logging
 import random
 import time
@@ -10,9 +11,29 @@ from utils import progress
 from pathlib import Path
 import argparse
 
+from tqdm.auto import tqdm
+
+import multiprocessing as mp
+
+
+def worker(row_idx):
+    try:
+        row = df.iloc[row_idx]
+        download_fn(row)
+    except requests.exceptions.RequestException as e:
+        logging.info(
+            f"Index {row_idx}: {row['img_url']} has error of type"
+            f" {e.__class__.__qualname__}."
+        )
+
+
+def init_pool(_df, _download_fn):
+    global df, download_fn
+    df, download_fn = _df, _download_fn
+
 
 def create_image_dataset(
-    metadata_csv, dataset_location, image_size=250, seed=42, population=0.1
+    metadata_csv, dataset_location, image_size=250, seed=42, population=0.2
 ):
     sampled_df = (
         pd.read_csv(metadata_csv, index_col=0)
@@ -25,15 +46,23 @@ def create_image_dataset(
         dataset_location / f"sampled_dataset_seed_{seed}_population_{population}.csv",
         index_label=False,
     )
-    for row_idx in progress(sampled_df.index, interval=0.001):
-        try:
-            row = sampled_df.iloc[row_idx]
-            download_image(row, dataset_location, faker, image_size)
-        except requests.exceptions.RequestException as e:
-            logging.info(
-                f"Index {row_idx}: {row['img_url']} has error of type"
-                f" {e.__class__.__qualname__}."
-            )
+    download_fn = partial(
+        download_image,
+        dataset_location=dataset_location,
+        faker=faker,
+        image_size=image_size,
+    )
+    with mp.Pool(
+        initializer=init_pool,
+        initargs=(sampled_df, download_fn),
+    ) as pool:
+        for _ in tqdm(
+            pool.imap(worker, sampled_df.index),
+            miniters=0.001,
+            total=len(sampled_df),
+            desc="downloading images",
+        ):
+            pass
 
 
 def download_image(row, dataset_location, faker, image_size):
