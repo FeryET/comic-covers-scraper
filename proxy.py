@@ -11,16 +11,21 @@ PROXY_LOCATION = "proxies.txt"
 
 
 class ProxyListManager:
+    __logger = logging.getLogger("ProxyListManager")
+
     def __init__(self):
         self.prepare()
 
     def prepare(self):
         self.n = 0
         with requests.get(os.environ["MORPH_PROXY_URL"]) as r:
+            logging.info(f"proxy request status code: {r.status_code}")
             self.proxies = [
-                f"http://{url.decode().strip()}\n" for url in r.content.splitlines()
+                "{ip}:{port}".format(ip=p["ip"].strip(), port=p["port"].strip())
+                for p in r.json()
             ]
         random.shuffle(self.proxies)
+        self.__logger.info("\n".join(self.proxies))
 
     def __len__(self):
         return len(self.proxies)
