@@ -9,10 +9,10 @@ import re
 import random
 
 from sqlalchemy import desc
-import scraper_backend.proxy
+import proxy
 from tqdm.auto import tqdm
 
-from scraper_backend.utils import progress
+from utils import progress
 
 
 def create_titles_csv_file(download_folder: str, filename: str) -> None:
@@ -20,7 +20,7 @@ def create_titles_csv_file(download_folder: str, filename: str) -> None:
     base_url = "https://www.coverbrowser.com/a-z"
     fake = Faker()
     titles_info = []
-    proxy_manager = scraper_backend.proxy.ProxyListManager()
+    proxy_manager = proxy.ProxyListManager()
     for char in progress(alphabet):
         time.sleep(random.uniform(0.05, 0.5))
         r = requests.get(

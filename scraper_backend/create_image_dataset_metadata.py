@@ -6,10 +6,10 @@ import requests
 import pandas as pd
 from faker import Faker
 from tqdm.auto import tqdm
-import scraper_backend.proxy
+import proxy
 import random
 
-from scraper_backend.utils import progress
+from utils import progress
 
 
 def get_all_comics_data(
@@ -24,7 +24,7 @@ def get_all_comics_data(
     output_path = f"{download_folder}/{filename}.csv"
     if os.path.exists(output_path):
         os.remove(output_path)
-    proxy_manager = scraper_backend.proxy.ProxyListManager()
+    proxy_manager = proxy.ProxyListManager()
     for row_idx in progress(list(range(len(titles_info_df))), 0.002):
         row = titles_info_df.iloc[row_idx]
         url = f"{base_url}{row['page_link']}"
