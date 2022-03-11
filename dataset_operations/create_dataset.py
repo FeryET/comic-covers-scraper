@@ -97,6 +97,7 @@ if __name__ == "__main__":
     parser.add_argument("--random-seed", default=42, type=int)
     parser.add_argument("--image-size", default=250, type=int)
     parser.add_argument("--population", default=0.2, type=float)
+    parser.add_argument("--test-run", action="store_true")
 
     args = parser.parse_args()
 
@@ -113,6 +114,9 @@ if __name__ == "__main__":
     random_seed = args.random_seed
     population = args.population
     image_size = args.image_size
+
+    if args.test_run:
+        population = 0.001
 
     logging.basicConfig(
         level=level,
