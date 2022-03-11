@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 import multiprocessing as mp
 import os
@@ -124,3 +125,12 @@ if __name__ == "__main__":
     create_image_dataset(
         "data/comic-dataset-metadata.csv", "data", image_size, random_seed, population
     )
+    with open("data/subset_info.json", "w") as jfile:
+        json.dump(
+            {
+                "population": population,
+                "random_seed": random_seed,
+                "image_size": image_size,
+            },
+            jfile,
+        )
