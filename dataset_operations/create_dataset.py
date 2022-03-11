@@ -1,19 +1,19 @@
-from functools import partial
-import logging
-import random
-import time
-import dotenv
-from faker import Faker
-import pandas as pd
-from PIL import Image
-import requests
-from utils import progress
-from pathlib import Path
 import argparse
-
-from tqdm.auto import tqdm
-
+import logging
 import multiprocessing as mp
+import os
+import random
+import sys
+import time
+from functools import partial
+from pathlib import Path
+
+import dotenv
+import pandas as pd
+import requests
+from faker import Faker
+from PIL import Image
+from tqdm.auto import tqdm
 
 
 def worker(row_idx):
@@ -92,15 +92,35 @@ def download_image(row, dataset_location, faker, image_size):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--debug", action="store_true")
+    parser.add_argument("--stdout-log", action="store_true")
+    parser.add_argument("--random-seed", default=42, type=int)
+    parser.add_argument("--image-size", default=250, type=int)
+    parser.add_argument("--population", default=0.2, type=float)
+
     args = parser.parse_args()
+
+    if args.stdout_log:
+        stream = sys.stdout
+    else:
+        stream = sys.stderr
+
     if args.debug:
         level = logging.DEBUG
     else:
         level = logging.INFO
+
+    random_seed = args.random_seed
+    population = args.population
+    image_size = args.image_size
+
     logging.basicConfig(
         level=level,
         format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s",
+        stream=stream
         # datefmt='%m-%d %H:%M',
     )
-    dotenv.load_dotenv("secrets.env")
-    create_image_dataset("data/comic-dataset-metadata.csv", "data")
+    if os.path.exists("secrets.env"):
+        dotenv.load_dotenv("secrets.env")
+    create_image_dataset(
+        "data/comic-dataset-metadata.csv", "data", image_size, random_seed, population
+    )
